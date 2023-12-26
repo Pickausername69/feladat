@@ -1,1 +1,5 @@
 rootProject.name = 'feladat'
+include 'web'
+include 'service'
+include 'dal'
+
