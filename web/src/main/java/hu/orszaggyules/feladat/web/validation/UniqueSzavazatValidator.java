@@ -1,6 +1,6 @@
 package hu.orszaggyules.feladat.web.validation;
 
-import hu.orszaggyules.feladat.web.domain.SzavazasSaveRequestSzavazat;
+import hu.orszaggyules.feladat.web.domain.request.SzavazasSaveRequestSzavazat;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

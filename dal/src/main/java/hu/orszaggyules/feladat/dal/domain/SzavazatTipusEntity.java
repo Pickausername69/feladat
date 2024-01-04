@@ -1,19 +1,23 @@
 package hu.orszaggyules.feladat.dal.domain;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-@Entity
-@Table(name = "szavazat_tipus")
 public enum SzavazatTipusEntity {
-    IGEN(1, "igen"),
-    NEM(2, "nem"),
-    TARTOZKODIK(3, "tartozkodik");
+    IGEN("i"),
+    NEM("n"),
+    TARTOZKODIK("t");
 
-    @Id
-    private final Integer id;
-    private final String tipus;
+    private String tipus;
+
+    public static SzavazatTipusEntity of(String value) {
+        for (SzavazatTipusEntity szavazatTipus : values()) {
+            if (szavazatTipus.getTipus().equals(value)) {
+                return szavazatTipus;
+            }
+        }
+        throw new IllegalArgumentException("Invalid SzavazatTipusEntity: " + value);
+    }
 }

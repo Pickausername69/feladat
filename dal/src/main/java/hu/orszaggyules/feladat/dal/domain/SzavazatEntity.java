@@ -1,14 +1,28 @@
 package hu.orszaggyules.feladat.dal.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.experimental.Accessors;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Builder
-@Accessors
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 @Entity
 @Table(name = "szavazat")
 public class SzavazatEntity {
-    private
+    @EmbeddedId
+    private SzavazatIdEntity id;
+
+    @ManyToOne
+    @MapsId("kepviseloId")
+    @JoinColumn(name = "kepviselo_id")
+    private KepviseloEntity kepviselo;
+
+    @ManyToOne
+    @MapsId("szavazasId")
+    @JoinColumn(name = "szavazas_id")
+    private SzavazasEntity szavazas;
+
+    @Enumerated(value = EnumType.STRING)
+    private SzavazatTipusEntity szavazat;
 }
