@@ -5,8 +5,6 @@ import hu.orszaggyules.feladat.service.domain.Szavazat;
 import hu.orszaggyules.feladat.web.domain.request.SzavazasSaveRequest;
 import hu.orszaggyules.feladat.web.domain.request.SzavazasSaveRequestSzavazat;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

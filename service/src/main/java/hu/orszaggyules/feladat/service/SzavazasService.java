@@ -2,19 +2,25 @@ package hu.orszaggyules.feladat.service;
 
 import hu.orszaggyules.feladat.dal.domain.SzavazasEntity;
 import hu.orszaggyules.feladat.dal.domain.SzavazatEntity;
+import hu.orszaggyules.feladat.dal.domain.SzavazatIdEntity;
 import hu.orszaggyules.feladat.dal.repository.KepviseloRepository;
 import hu.orszaggyules.feladat.dal.repository.SzavazasRepository;
+import hu.orszaggyules.feladat.dal.repository.SzavazatRepository;
 import hu.orszaggyules.feladat.service.domain.Szavazas;
 import hu.orszaggyules.feladat.service.domain.Szavazat;
+import hu.orszaggyules.feladat.service.domain.SzavazatTipus;
 import hu.orszaggyules.feladat.service.util.SzavazasIdGenerator;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import javax.management.InvalidAttributeValueException;
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Service
@@ -23,6 +29,7 @@ public class SzavazasService {
     private static final Integer SZAVAZAS_ID_GENERATION_RETRY_COUNT = 5;
     private ConversionService conversionService;
     private SzavazasRepository szavazasRepository;
+    private SzavazatRepository szavazatRepository;
     private KepviseloRepository kepviseloRepository;
     private SzavazasIdGenerator szavazasIdGenerator;
 
@@ -31,10 +38,18 @@ public class SzavazasService {
         validateKepviselos(szavazas);
         SzavazasEntity szavazasEntity = conversionService.convert(szavazas, SzavazasEntity.class);
         assignUniqueIdToSzavazas(szavazasEntity);
-        System.out.println("NOT ENTITY: "+szavazas);
-        System.out.println("ENTITY: "+szavazasEntity);
         SzavazasEntity saved = szavazasRepository.save(szavazasEntity);
         return conversionService.convert(saved, String.class);
+    }
+
+    public SzavazatTipus getKepviseloSzavazatOnSzavazas(String szavazasId, String kepviseloId) {
+        SzavazatIdEntity szavazatIdEntity = SzavazatIdEntity.builder()
+                .kepviseloId(kepviseloId)
+                .szavazasId(szavazasId)
+                .build();
+        SzavazatEntity szavazat = szavazatRepository.findById(szavazatIdEntity)
+                .orElseThrow(EntityNotFoundException::new);
+        return conversionService.convert(szavazat.getSzavazat().getTipus(), SzavazatTipus.class);
     }
 
     private void validateKepviselos(Szavazas szavazas) {
@@ -42,7 +57,6 @@ public class SzavazasService {
                 .stream()
                 .map(kepviselo -> kepviselo.getKepviselo().getId())
                 .toList();
-        System.out.println("[!] "+kepviseloIds);
         if (!kepviseloRepository.existsAllByIdIn(kepviseloIds))
         {
             throw new InvalidParameterException("There are kepviselos who are not present in the db!");
