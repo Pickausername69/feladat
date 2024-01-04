@@ -2,10 +2,12 @@ package hu.orszaggyules.feladat.web.controller;
 
 import hu.orszaggyules.feladat.service.SzavazasService;
 import hu.orszaggyules.feladat.service.domain.Szavazas;
+import hu.orszaggyules.feladat.service.domain.SzavazasEredmeny;
 import hu.orszaggyules.feladat.service.domain.SzavazatTipus;
 import hu.orszaggyules.feladat.web.domain.request.SzavazasSaveRequest;
 import hu.orszaggyules.feladat.web.domain.exception.ElnokNemSzavazottException;
 import hu.orszaggyules.feladat.web.domain.response.KepviseloSzavazatOnSzavazasResponse;
+import hu.orszaggyules.feladat.web.domain.response.SzavazasEredmenyResponse;
 import hu.orszaggyules.feladat.web.domain.response.SzavazasSaveResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -30,6 +32,12 @@ public class SzavazasController {
     public KepviseloSzavazatOnSzavazasResponse getKepviseloSzavazatOnSzavazas(@RequestParam String szavazas, @RequestParam String kepviselo) {
         SzavazatTipus szavazatTipus = szavazasService.getKepviseloSzavazatOnSzavazas(szavazas, kepviselo);
         return conversionService.convert(szavazatTipus, KepviseloSzavazatOnSzavazasResponse.class);
+    }
+
+    @RequestMapping(value = "/szavazasok/eredmeny", method = RequestMethod.GET)
+    public SzavazasEredmenyResponse getSzavazasEredmeny(@RequestParam String szavazas) {
+        SzavazasEredmeny szavazasEredmeny =szavazasService.getSzavazasEredmeny(szavazas);
+        return conversionService.convert(szavazasEredmeny, SzavazasEredmenyResponse.class);
     }
 
     private void checkIfElnokVotedToo(SzavazasSaveRequest szavazasSaveRequest) {

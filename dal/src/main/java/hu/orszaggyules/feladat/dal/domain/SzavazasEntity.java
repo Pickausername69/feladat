@@ -25,7 +25,6 @@ public class SzavazasEntity {
     private String targy;
     @Enumerated(EnumType.STRING)
     private SzavazasTipusEntity tipus;
-    //OntToOne is original
     @ManyToOne
     @JoinColumn(name = "elnok", referencedColumnName = "id")
     private KepviseloEntity elnok;

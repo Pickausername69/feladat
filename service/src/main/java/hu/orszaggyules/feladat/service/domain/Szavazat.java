@@ -8,4 +8,5 @@ import lombok.Data;
 public class Szavazat {
     private Kepviselo kepviselo;
     private SzavazatTipus szavazat;
+    private String szavazas;
 }
