@@ -20,20 +20,19 @@ public class SzavazasResultCalculatorManager {
         SzavazasEntity szavazasEntity = szavazasRepository.findById(szavazasId)
                 .orElseThrow(() -> new RuntimeException("Record not found!"));
         Szavazas szavazas = conversionService.convert(szavazasEntity, Szavazas.class);
-        System.out.println("[!] "+szavazas);
+        SzavazasResultCalculator szavazasResultCalculator = szavazasResultCalculators.stream()
+                .filter(calculator -> calculator.getSzavazasTipus().equals(szavazas.getTipus()))
+                .findFirst()
+                .get();
         return SzavazasEredmeny.builder()
-                .eredmeny(isSzavazasAccepted(szavazas))
-                .kepviselokSzama(szavazas.getSzavazatok().size())
+                .eredmeny(isSzavazasAccepted(szavazasResultCalculator, szavazas))
+                .kepviselokSzama(szavazasResultCalculator.getKepviselokSzama(szavazas))
                 .igenekSzama(calculateIgenekSzama(szavazas))
                 .nemekSzama(calculateNemekSzama(szavazas))
                 .tartozkodasokSzama(calculateTartozkodasokSzama(szavazas))
                 .build();
     }
-    private SzavazasEredmenyValue isSzavazasAccepted(Szavazas szavazas) {
-        SzavazasResultCalculator szavazasResultCalculator = szavazasResultCalculators.stream()
-                .filter(calculator -> calculator.getSzavazasTipus().equals(szavazas.getTipus()))
-                .findFirst()
-                .get();
+    private SzavazasEredmenyValue isSzavazasAccepted(SzavazasResultCalculator szavazasResultCalculator, Szavazas szavazas) {
         boolean accepted = szavazasResultCalculator.isSzavazasAccepted(szavazas);
         return SzavazasEredmenyValue.of(accepted);
     }

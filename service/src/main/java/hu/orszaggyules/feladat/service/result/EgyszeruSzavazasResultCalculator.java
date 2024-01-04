@@ -1,15 +1,28 @@
 package hu.orszaggyules.feladat.service.result;
 
+import hu.orszaggyules.feladat.dal.repository.SzavazasRepository;
 import hu.orszaggyules.feladat.service.domain.Szavazas;
 import hu.orszaggyules.feladat.service.domain.SzavazasTipus;
 import hu.orszaggyules.feladat.service.domain.SzavazatTipus;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Component
 public class EgyszeruSzavazasResultCalculator implements SzavazasResultCalculator {
+    private SzavazasRepository szavazasRepository;
     @Override
     public boolean isSzavazasAccepted(Szavazas szavazas) {
-        return getNumberOfIgens(szavazas) > szavazas.getSzavazatok().size();
+        return getNumberOfIgens(szavazas) > ((float) szavazasRepository
+                .findOldestJelenletiSzavazas(szavazas.getIdopont())
+                .getSzavazatok().size()) / 2f;
+    }
+
+    @Override
+    public int getKepviselokSzama(Szavazas szavazas) {
+        return szavazasRepository
+                .findOldestJelenletiSzavazas(szavazas.getIdopont())
+                .getSzavazatok().size();
     }
 
     @Override

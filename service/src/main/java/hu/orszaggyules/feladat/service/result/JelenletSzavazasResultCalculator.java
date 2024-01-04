@@ -12,6 +12,11 @@ public class JelenletSzavazasResultCalculator implements SzavazasResultCalculato
     }
 
     @Override
+    public int getKepviselokSzama(Szavazas szavazas) {
+        return szavazas.getSzavazatok().size();
+    }
+
+    @Override
     public SzavazasTipus getSzavazasTipus() {
         return SzavazasTipus.JELENLET;
     }

@@ -14,6 +14,12 @@ public class MinositettSzavazasResultCalculator implements SzavazasResultCalcula
     }
 
     @Override
+    public int getKepviselokSzama(Szavazas szavazas) {
+        return TOTAL_NUMBER_OF_KEPVISELO;
+    }
+
+
+    @Override
     public SzavazasTipus getSzavazasTipus() {
         return SzavazasTipus.MINOSITETT_TOBBSEGI_SZAVAZAS;
     }
