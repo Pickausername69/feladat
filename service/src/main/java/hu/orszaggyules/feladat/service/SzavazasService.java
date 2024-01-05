@@ -1,9 +1,6 @@
 package hu.orszaggyules.feladat.service;
 
-import hu.orszaggyules.feladat.dal.domain.KepviseloEntity;
-import hu.orszaggyules.feladat.dal.domain.SzavazasEntity;
-import hu.orszaggyules.feladat.dal.domain.SzavazatEntity;
-import hu.orszaggyules.feladat.dal.domain.SzavazatIdEntity;
+import hu.orszaggyules.feladat.dal.domain.*;
 import hu.orszaggyules.feladat.dal.repository.KepviseloRepository;
 import hu.orszaggyules.feladat.dal.repository.SzavazasRepository;
 import hu.orszaggyules.feladat.dal.repository.SzavazatRepository;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -45,6 +43,10 @@ public class SzavazasService {
                         .build())
                 .toList();
         kepviseloRepository.saveAll(kepviselos);
+
+        if (szavazasRepository.existsByidopont(szavazas.getIdopont())) {
+            throw new IllegalArgumentException("Szavazas with this idopont already exist!");
+        }
 
         SzavazasEntity szavazasEntity = conversionService.convert(szavazas, SzavazasEntity.class);
         assignUniqueIdToSzavazas(szavazasEntity);
@@ -73,13 +75,24 @@ public class SzavazasService {
                 .toList();
     }
 
+    public Float getAtlagInTimePeriod(LocalDateTime start, LocalDateTime end) {
+        List<SzavazasEntity> szavazasEntities = szavazasRepository.findByIdopontBetween(start, end);
+        int numberOfVotes = szavazasEntities.stream()
+                .filter(szavazasEntity -> !SzavazasTipusEntity.JELENLET.equals(szavazasEntity.getTipus()))
+                .map(x -> x.getSzavazatok().size())
+                .toList()
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+        return numberOfVotes / 200f;
+    }
+
     private void validateKepviselos(Szavazas szavazas) {
         List<String> kepviseloIds = szavazas.getSzavazatok()
                 .stream()
                 .map(kepviselo -> kepviselo.getKepviselo().getId())
                 .toList();
-        if (!kepviseloRepository.existsAllByIdIn(kepviseloIds))
-        {
+        if (!kepviseloRepository.existsAllByIdIn(kepviseloIds)) {
             throw new InvalidParameterException("There are kepviselos who are not present in the db!");
         }
     }

@@ -40,3 +40,11 @@ tasks.named('test') {
 apply plugin: 'application'
 
 mainClassName = 'hu.orszaggyules.feladat.FeladatApplication'
+
+task dockerBuild(type: Exec) {
+	commandLine 'docker', 'build', '-t', 'feladat:latest', '.'
+}
+
+task dockerRun(type: Exec) {
+	commandLine 'docker', 'run', '-p','8080:8080', '--name', 'feladat', 'feladat:latest', '.'
+}

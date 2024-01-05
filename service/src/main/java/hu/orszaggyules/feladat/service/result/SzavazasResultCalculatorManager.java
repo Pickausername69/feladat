@@ -3,6 +3,7 @@ package hu.orszaggyules.feladat.service.result;
 import hu.orszaggyules.feladat.dal.domain.SzavazasEntity;
 import hu.orszaggyules.feladat.dal.repository.SzavazasRepository;
 import hu.orszaggyules.feladat.service.domain.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class SzavazasResultCalculatorManager {
 
     public SzavazasEredmeny getSzavazasResult(String szavazasId) {
         SzavazasEntity szavazasEntity = szavazasRepository.findById(szavazasId)
-                .orElseThrow(() -> new RuntimeException("Record not found!"));
+                .orElseThrow(EntityNotFoundException::new);
         Szavazas szavazas = conversionService.convert(szavazasEntity, Szavazas.class);
         SzavazasResultCalculator szavazasResultCalculator = szavazasResultCalculators.stream()
                 .filter(calculator -> calculator.getSzavazasTipus().equals(szavazas.getTipus()))

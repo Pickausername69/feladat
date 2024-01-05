@@ -1,9 +1,11 @@
 package hu.orszaggyules.feladat.service.result;
 
 import hu.orszaggyules.feladat.dal.repository.SzavazasRepository;
+import hu.orszaggyules.feladat.service.domain.JelenletiSzavazasNotFoundException;
 import hu.orszaggyules.feladat.service.domain.Szavazas;
 import hu.orszaggyules.feladat.service.domain.SzavazasTipus;
 import hu.orszaggyules.feladat.service.domain.SzavazatTipus;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,7 @@ public class EgyszeruSzavazasResultCalculator implements SzavazasResultCalculato
     public boolean isSzavazasAccepted(Szavazas szavazas) {
         return getNumberOfIgens(szavazas) > ((float) szavazasRepository
                 .findOldestJelenletiSzavazas(szavazas.getIdopont())
+                .orElseThrow(JelenletiSzavazasNotFoundException::new)
                 .getSzavazatok().size()) / 2f;
     }
 
@@ -22,6 +25,7 @@ public class EgyszeruSzavazasResultCalculator implements SzavazasResultCalculato
     public int getKepviselokSzama(Szavazas szavazas) {
         return szavazasRepository
                 .findOldestJelenletiSzavazas(szavazas.getIdopont())
+                .orElseThrow(EntityNotFoundException::new)
                 .getSzavazatok().size();
     }
 
