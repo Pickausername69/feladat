@@ -6,9 +6,9 @@ import lombok.Data;
 @Builder
 @Data
 public class SzavazasEredmenyResponse {
-    String eredmeny;
-    Integer kepviselokSzama;
-    Integer igenekSzama;
-    Integer nemekSzama;
-    Integer tartozkodasokSzama;
+    private String eredmeny;
+    private Integer kepviselokSzama;
+    private Integer igenekSzama;
+    private Integer nemekSzama;
+    private Integer tartozkodasokSzama;
 }

@@ -1,5 +1,6 @@
 package hu.orszaggyules.feladat.service;
 
+import hu.orszaggyules.feladat.dal.domain.KepviseloEntity;
 import hu.orszaggyules.feladat.dal.domain.SzavazasEntity;
 import hu.orszaggyules.feladat.dal.domain.SzavazatEntity;
 import hu.orszaggyules.feladat.dal.domain.SzavazatIdEntity;
@@ -18,6 +19,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -34,7 +36,16 @@ public class SzavazasService {
 
     @Transactional
     public String save(Szavazas szavazas) {
-        validateKepviselos(szavazas);
+        //To not cause any problems with this, the Kepvislos no longer validated, and they are added to the db
+        //validateKepviselos(szavazas);
+        List<KepviseloEntity> kepviselos = szavazas.getSzavazatok()
+                .stream()
+                .map(kepviselo -> KepviseloEntity.builder()
+                        .id(kepviselo.getKepviselo().getId())
+                        .build())
+                .toList();
+        kepviseloRepository.saveAll(kepviselos);
+
         SzavazasEntity szavazasEntity = conversionService.convert(szavazas, SzavazasEntity.class);
         assignUniqueIdToSzavazas(szavazasEntity);
         SzavazasEntity saved = szavazasRepository.save(szavazasEntity);
@@ -53,6 +64,13 @@ public class SzavazasService {
 
     public SzavazasEredmeny getSzavazasEredmeny(String szavazasId) {
         return szavazasResultCalculatorManager.getSzavazasResult(szavazasId);
+    }
+
+    public List<Szavazas> getSzavazasOnDate(LocalDate date) {
+        List<SzavazasEntity> szavazasEntities = szavazasRepository.findAllOnDate(date);
+        return szavazasEntities.stream()
+                .map(szavazas -> conversionService.convert(szavazas, Szavazas.class))
+                .toList();
     }
 
     private void validateKepviselos(Szavazas szavazas) {

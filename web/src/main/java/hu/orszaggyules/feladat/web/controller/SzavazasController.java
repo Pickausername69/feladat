@@ -6,13 +6,16 @@ import hu.orszaggyules.feladat.service.domain.SzavazasEredmeny;
 import hu.orszaggyules.feladat.service.domain.SzavazatTipus;
 import hu.orszaggyules.feladat.web.domain.request.SzavazasSaveRequest;
 import hu.orszaggyules.feladat.web.domain.exception.ElnokNemSzavazottException;
-import hu.orszaggyules.feladat.web.domain.response.KepviseloSzavazatOnSzavazasResponse;
-import hu.orszaggyules.feladat.web.domain.response.SzavazasEredmenyResponse;
-import hu.orszaggyules.feladat.web.domain.response.SzavazasSaveResponse;
+import hu.orszaggyules.feladat.web.domain.response.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -36,8 +39,26 @@ public class SzavazasController {
 
     @RequestMapping(value = "/szavazasok/eredmeny", method = RequestMethod.GET)
     public SzavazasEredmenyResponse getSzavazasEredmeny(@RequestParam String szavazas) {
-        SzavazasEredmeny szavazasEredmeny =szavazasService.getSzavazasEredmeny(szavazas);
+        SzavazasEredmeny szavazasEredmeny = szavazasService.getSzavazasEredmeny(szavazas);
         return conversionService.convert(szavazasEredmeny, SzavazasEredmenyResponse.class);
+    }
+
+    @RequestMapping(value = "/szavazasok/napi-szavazasok", method = RequestMethod.GET)
+    public ComplexSzavazasEredmenyResponseWrapper getNapiSzavazat(@RequestParam LocalDate nap) {
+        List<Szavazas> szavazasList = szavazasService.getSzavazasOnDate(nap);
+        List<ComplexSzavazasEredmenyResponse> result = new ArrayList<>();
+        szavazasList.forEach(szavazas -> {
+            ComplexSzavazasEredmenyResponse converted = conversionService.convert(szavazas, ComplexSzavazasEredmenyResponse.class);
+            extendComplexSzavazasEredmenyResponse(converted, szavazas);
+            result.add(converted);
+        });
+        return new ComplexSzavazasEredmenyResponseWrapper(result);
+    }
+
+    private void extendComplexSzavazasEredmenyResponse(ComplexSzavazasEredmenyResponse complexSzavazasEredmenyResponse, Szavazas szavazas) {
+        SzavazasEredmeny szavazasEredmeny = szavazasService.getSzavazasEredmeny(szavazas.getId());
+        complexSzavazasEredmenyResponse.setEredmeny(szavazasEredmeny.getEredmeny().getEredmenyValue());
+        complexSzavazasEredmenyResponse.setKepviselokSzama(szavazasEredmeny.getKepviselokSzama());
     }
 
     private void checkIfElnokVotedToo(SzavazasSaveRequest szavazasSaveRequest) {
