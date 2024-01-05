@@ -19,15 +19,15 @@
 
 - ## /szavazasok/szavazas (POST)
   - Handles the saving of the given szavazas
-- ## /szavazasok/szavazat?szavazas=<szavazas>&kepviselo=<kepviselo> (GET)
+- ## /szavazasok/szavazat?szavazas=[szavazas]&kepviselo=[kepviselo] (GET)
   - Returns the Szavazat of the given Kepviselo on the given Szavazas
-- ## /szavazasok/eredmeny?szavazas=<szavazas> (GET)
+- ## /szavazasok/eredmeny?szavazas=[szavazas] (GET)
   - Returns the result of the Szavazas
-- ## /szavazasok/napi-szavazasok?nap=<yyyy-MM-dd> (GET)
+- ## /szavazasok/napi-szavazasok?nap=[yyyy-MM-dd] (GET)
   - Returns all the information about the szavazas
-- ## /szavazasok/kepviselo-reszvetel-atlag?start=<yyyy-MM-ddThh:mm:ss>&end=<yyyy-MM-ddThh:mm:ss> (GET)
+- ## /szavazasok/kepviselo-reszvetel-atlag?start=[yyyy-MM-ddThh:mm:ss]&end=[yyyy-MM-ddThh:mm:ss] (GET)
   - Returns the average participation of a Kepviselo in Szavazas
-  - I inerpreted the task as the number of Kepviselo should be the constant 200
+  - I interpreted the task as the number of Kepviselo should be the constant 200
 
 
 ### If you don't have gradle installed a gradle wrapper was included with this project. You can use it with the following command  "./gradlew"
